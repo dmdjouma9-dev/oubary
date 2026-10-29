@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OUBARY - Streaming & TV Pan-Africaine</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: #1f2833;
+            --accent-color: #e50914;
+            --text-color: #ffffff;
+            --gold-color: #f1c40f;
+            --success-color: #2ed573;
+            --ios-color: #007aff;
+            --ai-color: #8e44ad;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 70px; /* Espace pour la barre du bas */
+        }
+
+        header {
+            width: 100%;
+            background: #14151f;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            letter-spacing: 2px;
+            color: var(--accent-color);
+        }
+
+        .lang-bar {
+            display: flex;
+            gap: 5px;
+        }
+
+        .lang-btn {
+            background: #2a2d3d;
+            color: #fff;
+            border: none;
+            padding: 3px 6px;
+            font-size: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 450px;
+            margin-top: 15px;
+        }
+
+        /* Vues (Pages) */
+        .view-section {
+            display: none;
+        }
+        .view-section.active {
+            display: block;
+        }
+
+        /* Barre de recherche & Filtres Accueil */
+        .search-box {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #3a3f55;
+            background: #14151f;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            margin-bottom: 12px;
+            padding-bottom: 4px;
+        }
+        .filter-btn {
+            background: #2a2d3d;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .filter-btn.active {
+            background: var(--accent-color);
+        }
+
+        /* Bannière Accueil */
+        .hero-banner {
+            background: linear-gradient(to top, rgba(11,12,16,0.95), transparent), url('https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500') center/cover;
+            height: 160px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--accent-color);
+        }
+        .hero-title { font-size: 15px; font-weight: bold; color: #fff; }
+        .hero-sub { font-size: 11px; color: #ccc; margin-bottom: 6px; }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #2a2d3d;
+        }
+        .card-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-yt { background-color: #ff0000; color: #fff; }
+        .btn-verify { background-color: var(--success-color); color: #fff; display: none; }
+        .btn-android { background-color: var(--gold-color); color: #000; }
+        .btn-ios { background-color: var(--ios-color); color: #fff; }
+        .btn-ai { background-color: var(--ai-color); color: #fff; }
+        .btn-danger { background-color: #ff4757; color: #fff; }
+
+        .badge { background: var(--accent-color); font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+        .badge-vip { background: var(--success-color); font-size: 10px; padding: 2px 6px; border-radius: 4px; display: none; }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .media-card {
+            background: #14151f;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            position: relative;
+        }
+        .top-badge {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(0,0,0,0.8);
+            color: var(--gold-color);
+            font-weight: bold;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+        .media-card img {
+            width: 100%;
+            border-radius: 6px;
+            height: 90px;
+            object-fit: cover;
+        }
+        .media-title { font-size: 11px; margin: 6px 0; font-weight: bold; }
+
+        /* Barre de Navigation Fixe en Bas */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #14151f;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.4);
+            z-index: 1000;
+            border-top: 1px solid #2a2d3d;
+        }
+        .nav-item {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            gap: 2px;
+        }
+        .nav-item span.icon {
+            font-size: 18px;
+        }
+        .nav-item.active {
+            color: var(--accent-color);
+        }
+
+        .data-note {
+            background: rgba(241, 196, 15, 0.1);
+            border-left: 3px solid var(--gold-color);
+            padding: 8px;
+            font-size: 11px;
+            color: #ddd;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+        #statusMessage { font-size: 12px; color: #f1c40f; margin-top: 5px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>OUBARY</h1>
+        <div class="lang-bar">
+            <button class="lang-btn" onclick="changeLang('fr')">FR</button>
+            <button class="lang-btn" onclick="changeLang('en')">EN</button>
+            <button class="lang-btn" onclick="changeLang('ar')">AR</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- ================= VUE 1 : ACCUEIL ================= -->
+        <div id="view-home" class="view-section active">
+            
+            <!-- Barre de recherche -->
+            <input type="text" class="search-box" id="searchInput" placeholder="Rechercher une série, un animé, un film..." onkeyup="filterSearch()">
+
+            <!-- Filtres par genre (Animés, TV, Séries, Films) -->
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="setFilter('all', this)">Tous</button>
+                <button class="filter-btn" onclick="setFilter('anime', this)">⛩️ Animés</button>
+                <button class="filter-btn" onclick="setFilter('tv', this)">📺 TV</button>
+                <button class="filter-btn" onclick="setFilter('series', this)">🎬 Séries</button>
+                <button class="filter-btn" onclick="setFilter('movies', this)">🎥 Films</button>
+            </div>
+
+            <!-- Bannière Nouveauté (Saison 1 / 2) -->
+            <div class="hero-banner">
+                <div class="badge" style="width: fit-content; margin-bottom: 4px;" id="txtHeroBadge">SAISON 1 & 2 DISPONIBLE</div>
+                <div class="hero-title" id="txtHeroTitle">Solo Leveling / Nouveautés</div>
+                <div class="hero-sub" id="txtHeroSub">Découvre les épisodes frais sans consommer tes passes.</div>
+                <button class="btn btn-android" onclick="downloadAndroid('Nouveauté Vedette')" style="padding: 6px; font-size: 11px;" id="txtHeroBtn">🔥 Regarder / Télécharger</button>
+            </div>
+
+            <!-- Note d'économie de passes -->
+            <div class="data-note" id="txtDataNote">
+                💡 <b>Astuce Passes :</b> Vidéos ultra-compressées. Télécharge une fois et regarde sans internet !
+            </div>
+
+            <!-- Catalogue Top 10 & Tendances -->
+            <div class="card">
+                <div class="card-title">
+                    <span id="txtCatalogTitle">Top 10 & Tendances</span>
+                </div>
+                <div class="media-grid" id="catalogContent">
+                    <!-- Dynamique -->
+                </div>
+            </div>
+
+            <!-- Pass VIP YouTube -->
+            <div class="card">
+                <div class="card-title">
+                    <span id="txtVipTitle">Pass VIP Zéro Pub</span>
+                    <div>
+                        <span class="badge" id="badgeReq">Requis</span>
+                        <span class="badge-vip" id="badgeVip">VIP ACTIF</span>
+                    </div>
+                </div>
+                <p style="font-size: 12px; color: #aaa;" id="txtVipDesc">Pour éviter les pubs, abonne-toi à notre chaîne !</p>
+                <button class="btn btn-yt" id="ytBtn" onclick="openYouTubeChannel()">1. S'abonner (@woly-0z)</button>
+                <button class="btn btn-verify" id="verifyBtn" onclick="verifySubscription()">2. J'm'y suis abonné ! Vérifier</button>
+                <div id="statusMessage"></div>
+            </div>
+
+        </div>
+
+        <!-- ================= VUE 2 : CHAÎNES TV LOCALES & AFRICAINES ================= -->
+        <div id="view-tv" class="view-section">
+            <div class="card">
+                <div class="card-title"><span>📺 Chaînes TV & Directs Africains</span></div>
+                <p style="font-size: 12px; color: #aaa;" id="txtTvDesc">Retrouve tes chaînes guinéennes et africaines préférées en direct.</p>
+                <div class="media-grid">
+                    <div class="media-card" onclick="alert('Lancement du flux TV Guinée...')">
+                        <img src="https://images.unsplash.com/photo-1593784991095-a205069470b6?w=200" alt="TV">
+                        <div class="media-title">Guinée TV Direct</div>
+                    </div>
+                    <div class="media-card" onclick="alert('Lancement du flux Canal Oubary...')">
+                        <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=200" alt="TV">
+                        <div class="media-title">Canal Pan-Africain</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VUE 3 : TÉLÉCHARGEMENT & TRANSFERT (XENDER) ================= -->
+        <div id="view-downloads" class="view-section">
+            <div class="card">
+                <div class="card-title">
+                    <span>📥 Téléchargements & Transfert</span>
+                    <span class="badge-vip" id="badgeVipHeader">VIP</span>
+                </div>
+                <p style="font-size: 12px; color: #aaa;" id="txtDownloadDesc">Retrouve tes fichiers téléchargés et partage-les sans internet (Android ou Mode iPhone / Xender).</p>
+                
+                <div class="media-item" style="background:#14151f; padding:10px; border-radius:8px; margin-bottom:10px; font-size:12px;">
+                    <b>Demon Slayer - Épisode 01</b> (HD Compressé - 320 Mo)
+                    <div style="display: flex; gap: 6px; margin-top: 8px;">
+                        <button class="btn btn-android" style="margin:0; padding:6px;" onclick="alert('Lecture locale sans internet lancée !')">▶️ Lire</button>
+                        <button class="btn btn-ios" style="margin:0; padding:6px;" onclick="transferIPhone('Demon Slayer Ep 1')">🍎 Mode iPhone</button>
+                    </div>
+                </div>
+
+                <button class="btn btn-danger" onclick="alert('Espace téléphone nettoyé !')" id="btnClear">🗑️ Nettoyer l'espace de stockage</button>
+            </div>
+        </div>
+
+        <!-- ================= VUE 4 : ASSISTANT IA ================= -->
+        <div id="view-ai" class="view-section">
+            <div class="card" style="border: 1px solid var(--ai-color);">
+                <div class="card-title"><span>🤖 Oubary AI Assistant</span></div>
+                <p style="font-size: 12px; color: #aaa;" id="txtAiDesc">Tu as oublié le nom d'un animé ou d'une série ? Envoie une description ou une photo, l'IA retrouve le titre et lance la recherche instantanément !</p>
+                
+                <input type="text" class="search-box" id="aiQuery" placeholder="Ex: Un ninja blond avec un démon renard...">
+                <button class="btn btn-ai" onclick="runAiAssistant()" id="txtAiBtn">🔍 Retrouver & Lancer la recherche</button>
+                <div id="aiResult" style="font-size: 12px; color: #64ffda; margin-top: 10px; background: rgba(100,255,218,0.1); padding: 10px; border-radius: 6px; display: none;"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Barre de Navigation Fixe en Bas -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchView('home', this)">
+            <span class="icon">🏠</span>
+            <span id="navHome">Accueil</span>
+        </button>
+        <button class="nav-item" onclick="switchView('tv', this)">
+            <span class="icon">📺</span>
+            <span id="navTv">TV</span>
+        </button>
+        <button class="nav-item" onclick="switchView('downloads', this)">
+            <span class="icon">📥</span>
+            <span id="navDownloads">Transférer</span>
+        </button>
+        <button class="nav-item" onclick="switchView('ai', this)">
+            <span class="icon">🤖</span>
+            <span id="navAi">IA</span>
+        </button>
+    </nav>
+
+    <script>
+        let isVip = localStorage.getItem('oubary_vip') === 'true';
+
+        // Données du catalogue
+        const mediaData = [
+            {type: 'anime', title: 'Demon Slayer S4', img: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=200', top: '#1'},
+            {type: 'anime', title: 'Jujutsu Kaisen', img: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=200', top: '#2'},
+            {type: 'series', title: 'House of Dragon', img: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=200', top: '#1'},
+            {type: 'movies', title: 'Avatar 2 HD', img: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=200', top: '#1'},
+            {type: 'tv', title: 'JT Guinée Direct', img: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?w=200', top: 'LIVE'}
+        ];
+
+        const translations = {
+            fr: {
+                navHome: "Accueil", navTv: "TV", navDownloads: "Transférer", navAi: "IA",
+                heroBadge: "SAISON 1 & 2 DISPONIBLE", heroTitle: "Solo Leveling / Nouveautés", heroSub: "Épisodes frais sans consommer tes passes.", heroBtn: "🔥 Regarder / Télécharger",
+                dataNote: "💡 <b>Astuce Passes :</b> Vidéos ultra-compressées. Télécharge une fois et regarde sans internet !",
+                catalogTitle: "Top 10 & Tendances",
+                vipTitle: "Pass VIP Zéro Pub", vipDesc: "Pour éviter les pubs, abonne-toi à notre chaîne !",
+                subBtn: "1. S'abonner (@woly-0z)", verifyBtn: "2. J'm'y suis abonné ! Vérifier",
+                tvDesc: "Retrouve tes chaînes guinéennes et africaines préférées en direct.",
+                downloadDesc: "Retrouve tes fichiers téléchargés et partage-les sans internet (Android ou Mode iPhone / Xender).",
+                clear: "🗑️ Nettoyer l'espace de stockage",
+                aiDesc: "Tu as oublié le nom d'un animé ? Envoie une description, l'IA retrouve le titre et lance la recherche !",
+                aiBtn: "🔍 Retrouver & Lancer la recherche"
+            },
+            en: {
+                navHome: "Home", navTv: "TV", navDownloads: "Transfer", navAi: "AI",
+                heroBadge: "SEASON 1 & 2 OUT", heroTitle: "Solo Leveling / New Releases", heroSub: "Fresh episodes saving your data balance.", heroBtn: "🔥 Watch / Download",
+                dataNote: "💡 <b>Data Saver:</b> Compressed videos. Download once and watch offline!",
+                catalogTitle: "Top 10 & Trends",
+                vipTitle: "VIP Pass No Ads", vipDesc: "To block ads, subscribe to our channel!",
+                subBtn: "1. Subscribe (@woly-0z)", verifyBtn: "2. I subscribed! Verify",
+                tvDesc: "Watch your favorite Guinean and African TV channels live.",
+                downloadDesc: "Manage downloaded files and share offline (Android or iPhone / Xender Mode).",
+                clear: "🗑️ Clean storage space",
+                aiDesc: "Forgot an anime name? Describe it, AI finds the title and searches instantly!",
+                aiBtn: "🔍 Find & Search"
+            },
+            ar: {
+                navHome: "الرئيسية", navTv: "التلفزيون", navDownloads: "النقل", navAi: "الذكاء الاصطناعي",
+                heroBadge: "الموسم الأول والثاني متوفر", heroTitle: "سولو ليفلينج / إصدارات جديدة", heroSub: "حلقات جديدة توفر رصيد الإنترنت لديك.", heroBtn: "🔥 مشاهدة / تنزيل",
+                dataNote: "💡 <b>موفّر البيانات:</b> فيديوهات مضغوطة. قم بالتنزيل مرة واحدة وشاهد بدون إنترنت!",
+                catalogTitle: "أفضل 10 والاتجاهات",
+                vipTitle: "اشتراك VIP بدون إعلانات", vipDesc: "لمنع الإعلانات، اشترك في قناتنا!",
+                subBtn: "1. الاشتراك (@woly-0z)", verifyBtn: "2. لقد اشتركت! تحقق",
+                tvDesc: "تابع قنواتك الغينية والأفريقية المفضلة بث مباشر.",
+                downloadDesc: "إدارة الملفات المنزلة والمشاركة بدون إنترنت (أندرويد أو وضع آيفون / Xender).",
+                clear: "🗑️ تنظيف مساحة التخزين",
+                aiDesc: "هل نسيت اسم الأنمي؟ اصفه وسيجد الذكاء الاصطناعي العنوان ويبحث فوراً!",
+                aiBtn: "🔍 إيجاد وبحث"
+            }
+        };
+
+        window.onload = function() {
+            if (isVip) { activerModeVipVisuel(); }
+            renderCatalog(mediaData);
+        };
+
+        function switchView(viewId, btn) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('view-' + viewId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function renderCatalog(data) {
+            const grid = document.getElementById('catalogContent');
+            grid.innerHTML = '';
+            data.forEach(item => {
+                grid.innerHTML += `
+                    <div class="media-card">
+                        <span class="top-badge">${item.top}</span>
+                        <img src="${item.img}" alt="Media">
+                        <div class="media-title">${item.title}</div>
+                        <button class="btn btn-android" onclick="downloadAndroid('${item.title}')">📥 Android</button>
+                        <button class="btn btn-ios" onclick="transferIPhone('${item.title}')">🍎 iPhone</button>
+                    </div>
+                `;
+            });
+        }
+
+        function setFilter(type, btn) {
+            document.querySelectorAll('.filter-btn').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+
+            if(type === 'all') {
+                renderCatalog(mediaData);
+            } else {
+                const filtered = mediaData.filter(m => m.type === type);
+                renderCatalog(filtered);
+            }
+        }
+
+        function filterSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = mediaData.filter(m => m.title.toLowerCase().includes(query));
+            renderCatalog(filtered);
+        }
+
+        function changeLang(lang) {
+            const t = translations[lang];
+            document.getElementById('navHome').innerText = t.navHome;
+            document.getElementById('navTv').innerText = t.navTv;
+            document.getElementById('navDownloads').innerText = t.navDownloads;
+            document.getElementById('navAi').innerText = t.navAi;
+            document.getElementById('txtHeroBadge').innerText = t.heroBadge;
+            document.getElementById('txtHeroTitle').innerText = t.heroTitle;
+            document.getElementById('txtHeroSub').innerText = t.heroSub;
+            document.getElementById('txtHeroBtn').innerText = t.heroBtn;
+            document.getElementById('txtDataNote').innerHTML = t.dataNote;
+            document.getElementById('txtCatalogTitle').innerText = t.catalogTitle;
+            document.getElementById('txtVipTitle').innerText = t.vipTitle;
+            document.getElementById('txtVipDesc').innerText = t.vipDesc;
+            document.getElementById('ytBtn').innerText = t.subBtn;
+            document.getElementById('verifyBtn').innerText = t.verifyBtn;
+            document.getElementById('txtTvDesc').innerText = t.tvDesc;
+            document.getElementById('txtDownloadDesc').innerText = t.downloadDesc;
