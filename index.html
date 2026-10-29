@@ -503,3 +503,66 @@
             document.getElementById('verifyBtn').innerText = t.verifyBtn;
             document.getElementById('txtTvDesc').innerText = t.tvDesc;
             document.getElementById('txtDownloadDesc').innerText = t.downloadDesc;
+<script>
+  // 1. Liste des médias (Catalogue)
+  const mediaData = [
+    { title: "Solo Leveling", type: "anime", img: "https://via.placeholder.com/150", link: "https://youtube.com" },
+    { title: "Naruto Shippuden", type: "anime", img: "https://via.placeholder.com/150", link: "https://youtube.com" },
+    { title: "One Piece", type: "anime", img: "https://via.placeholder.com/150", link: "https://youtube.com" }
+  ];
+
+  // 2. Navigation entre les Onglets (Accueil, TV, Transférer, IA)
+  function switchTab(tabId) {
+    const views = document.querySelectorAll('.view-section');
+    views.forEach(v => v.style.display = 'none');
+    
+    const target = document.getElementById('view-' + tabId);
+    if(target) target.style.display = 'block';
+
+    const buttons = document.querySelectorAll('.nav-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+  }
+
+  // 3. Filtrage par Catégories (Animés, TV, Séries, Films)
+  function setFilter(type, btn) {
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+
+    if(type === 'all') {
+      renderCatalog(mediaData);
+    } else {
+      const filtered = mediaData.filter(m => m.type === type);
+      renderCatalog(filtered);
+    }
+  }
+
+  // 4. Recherche Dynamique
+  function filterSearch() {
+    const input = document.getElementById('searchInput');
+    if(!input) return;
+    const query = input.value.toLowerCase();
+    const filtered = mediaData.filter(m => m.title.toLowerCase().includes(query));
+    renderCatalog(filtered);
+  }
+
+  // 5. Affichage du Catalogue
+  function renderCatalog(data) {
+    const grid = document.getElementById('mediaGrid');
+    if(!grid) return;
+    grid.innerHTML = '';
+    data.forEach(item => {
+      grid.innerHTML += `
+        <div class="media-card" onclick="window.open('${item.link}', '_blank')">
+          <img src="${item.img}" alt="${item.title}">
+          <div class="media-title">${item.title}</div>
+        </div>
+      `;
+    });
+  }
+
+  // Initialisation au chargement
+  document.addEventListener('DOMContentLoaded', () => {
+    renderCatalog(mediaData);
+  });
+</script>
