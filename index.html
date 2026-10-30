@@ -1,568 +1,199 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OUBARY - Streaming & TV Pan-Africaine</title>
-    <style>
-        :root {
-            --bg-color: #0b0c10;
-            --card-bg: #1f2833;
-            --accent-color: #e50914;
-            --text-color: #ffffff;
-            --gold-color: #f1c40f;
-            --success-color: #2ed573;
-            --ios-color: #007aff;
-            --ai-color: #8e44ad;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding-bottom: 70px; /* Espace pour la barre du bas */
-        }
-
-        header {
-            width: 100%;
-            background: #14151f;
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-sizing: border-box;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 20px;
-            letter-spacing: 2px;
-            color: var(--accent-color);
-        }
-
-        .lang-bar {
-            display: flex;
-            gap: 5px;
-        }
-
-        .lang-btn {
-            background: #2a2d3d;
-            color: #fff;
-            border: none;
-            padding: 3px 6px;
-            font-size: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .container {
-            width: 92%;
-            max-width: 450px;
-            margin-top: 15px;
-        }
-
-        /* Vues (Pages) */
-        .view-section {
-            display: none;
-        }
-        .view-section.active {
-            display: block;
-        }
-
-        /* Barre de recherche & Filtres Accueil */
-        .search-box {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid #3a3f55;
-            background: #14151f;
-            color: #fff;
-            box-sizing: border-box;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-
-        .filter-bar {
-            display: flex;
-            gap: 5px;
-            overflow-x: auto;
-            margin-bottom: 12px;
-            padding-bottom: 4px;
-        }
-        .filter-btn {
-            background: #2a2d3d;
-            color: #fff;
-            border: none;
-            padding: 6px 12px;
-            font-size: 11px;
-            font-weight: bold;
-            border-radius: 15px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .filter-btn.active {
-            background: var(--accent-color);
-        }
-
-        /* Bannière Accueil */
-        .hero-banner {
-            background: linear-gradient(to top, rgba(11,12,16,0.95), transparent), url('https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500') center/cover;
-            height: 160px;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid var(--accent-color);
-        }
-        .hero-title { font-size: 15px; font-weight: bold; color: #fff; }
-        .hero-sub { font-size: 11px; color: #ccc; margin-bottom: 6px; }
-
-        .card {
-            background-color: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #2a2d3d;
-        }
-        .card-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: none;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-yt { background-color: #ff0000; color: #fff; }
-        .btn-verify { background-color: var(--success-color); color: #fff; display: none; }
-        .btn-android { background-color: var(--gold-color); color: #000; }
-        .btn-ios { background-color: var(--ios-color); color: #fff; }
-        .btn-ai { background-color: var(--ai-color); color: #fff; }
-        .btn-danger { background-color: #ff4757; color: #fff; }
-
-        .badge { background: var(--accent-color); font-size: 10px; padding: 2px 6px; border-radius: 4px; }
-        .badge-vip { background: var(--success-color); font-size: 10px; padding: 2px 6px; border-radius: 4px; display: none; }
-
-        .media-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .media-card {
-            background: #14151f;
-            border-radius: 8px;
-            padding: 8px;
-            text-align: center;
-            position: relative;
-        }
-        .top-badge {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            background: rgba(0,0,0,0.8);
-            color: var(--gold-color);
-            font-weight: bold;
-            font-size: 10px;
-            padding: 2px 5px;
-            border-radius: 4px;
-        }
-        .media-card img {
-            width: 100%;
-            border-radius: 6px;
-            height: 90px;
-            object-fit: cover;
-        }
-        .media-title { font-size: 11px; margin: 6px 0; font-weight: bold; }
-
-        /* Barre de Navigation Fixe en Bas */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #14151f;
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.4);
-            z-index: 1000;
-            border-top: 1px solid #2a2d3d;
-        }
-        .nav-item {
-            background: none;
-            border: none;
-            color: #888;
-            font-size: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            gap: 2px;
-        }
-        .nav-item span.icon {
-            font-size: 18px;
-        }
-        .nav-item.active {
-            color: var(--accent-color);
-        }
-
-        .data-note {
-            background: rgba(241, 196, 15, 0.1);
-            border-left: 3px solid var(--gold-color);
-            padding: 8px;
-            font-size: 11px;
-            color: #ddd;
-            border-radius: 4px;
-            margin-bottom: 12px;
-        }
-        #statusMessage { font-size: 12px; color: #f1c40f; margin-top: 5px; text-align: center; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b0a">
+<title>OUBARY — Le monde en vidéos</title>
+<style>
+:root{--bg:#080b0a;--panel:#111714;--panel2:#18211c;--text:#f4f7f4;--muted:#9aa69e;--green:#42f58d;--green2:#1fb866;--red:#ff5a64;--border:#27332b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--green);outline-offset:2px}.hidden{display:none!important}.app{min-height:100vh;padding-bottom:78px}.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 16px;position:sticky;top:0;background:rgba(8,11,10,.94);backdrop-filter:blur(12px);z-index:10;border-bottom:1px solid rgba(255,255,255,.04)}.brand{display:flex;gap:10px;align-items:center;font-size:23px;font-weight:900;letter-spacing:1px}.logo{width:36px;height:36px;border-radius:12px;background:var(--green);color:#07110a;display:grid;place-items:center;font-size:19px}.brand span{color:var(--green)}.top-actions{display:flex;gap:8px}.icon-btn{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:9px 11px}.page{display:none;padding:18px 16px;max-width:1000px;margin:auto;animation:fade .2s ease}.page.active{display:block}@keyframes fade{from{opacity:.5;transform:translateY(4px)}to{opacity:1;transform:none}}.eyebrow{color:var(--green);text-transform:uppercase;letter-spacing:1.6px;font-size:11px;font-weight:800}.hero{padding:24px 20px;border-radius:24px;background:radial-gradient(circle at 90% 10%,#245f3d 0,transparent 35%),linear-gradient(135deg,#17271d,#101512 70%);border:1px solid #294a35;position:relative;overflow:hidden}.hero h1{font-size:clamp(28px,7vw,42px);line-height:1.08;margin:10px 0}.hero p{color:#c5d3c9;max-width:540px;line-height:1.5}.btn{padding:12px 16px;border-radius:13px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary{background:var(--green);color:#061109}.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}.danger{background:#381c20;color:#ffb3b7;border:1px solid #623039}.full{width:100%}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:26px 0 13px}.section-head h2{font-size:19px;margin:0}.text-btn{background:transparent;color:var(--green);font-weight:800;padding:5px}.search{display:flex;gap:8px;margin:16px 0}.search input,.field,input,select,textarea{width:100%;background:#0d120f;border:1px solid var(--border);color:var(--text);border-radius:12px;padding:13px}.search input{flex:1;min-width:0}.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}.chip{white-space:nowrap;background:var(--panel2);color:#c4cec7;border:1px solid var(--border);border-radius:999px;padding:9px 13px;font-size:13px}.chip.selected{background:#183b27;color:var(--green);border-color:#2e7148}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{background:var(--panel);border:1px solid var(--border);border-radius:17px;overflow:hidden;min-width:0}.poster{aspect-ratio:4/3;display:grid;place-items:center;font-size:45px;background:linear-gradient(135deg,#253c2d,#111b15);position:relative}.poster .badge{position:absolute;top:9px;left:9px;font-size:10px;background:#07110bda;color:var(--green);padding:5px 7px;border-radius:7px}.card-body{padding:11px}.card h3{font-size:14px;margin:0 0 5px;line-height:1.3}.card p{font-size:12px;color:var(--muted);margin:0 0 10px}.card-actions{display:flex;gap:6px}.small-btn{flex:1;background:var(--panel2);color:var(--text);border-radius:9px;padding:8px 5px;font-size:12px}.small-btn.green{color:var(--green)}.feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.feature{background:var(--panel);border:1px solid var(--border);padding:16px;border-radius:17px;text-align:left;color:var(--text);min-height:118px}.feature .emoji{font-size:28px}.feature h3{margin:10px 0 5px;font-size:15px}.feature p{margin:0;color:var(--muted);font-size:12px;line-height:1.4}.country-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.country{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:13px;color:var(--text);text-align:left}.country .flag{font-size:25px}.country strong{display:block;font-size:13px}.country small{color:var(--muted)}.list{display:grid;gap:10px}.row{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:13px}.row .row-icon{font-size:25px}.row .grow{flex:1;min-width:0}.row h3{margin:0 0 4px;font-size:14px}.row p{margin:0;color:var(--muted);font-size:12px}.row button{background:var(--panel2);color:var(--green);border-radius:9px;padding:9px}.bottom-nav{position:fixed;z-index:20;bottom:0;left:0;right:0;display:flex;justify-content:space-around;gap:2px;padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:rgba(12,16,13,.97);border-top:1px solid var(--border);backdrop-filter:blur(12px)}.nav-btn{background:transparent;color:#87938b;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 7px;min-width:0;flex:1;font-size:10px}.nav-btn .nav-icon{font-size:20px}.nav-btn.active{color:var(--green)}.empty{border:1px dashed #3a4a3e;border-radius:16px;padding:24px;text-align:center;color:var(--muted)}.empty .big{font-size:35px;margin-bottom:8px}.form{display:grid;gap:12px}.label{display:block;font-size:13px;color:#c7d2ca;margin-bottom:6px}.notice{background:#19261d;border:1px solid #2d5339;border-radius:13px;padding:12px;color:#c9e6d2;font-size:12px;line-height:1.5}.warning{background:#2b2012;border-color:#5b4320;color:#f2d9a5}.modal-backdrop{position:fixed;inset:0;background:#000b;z-index:50;display:grid;place-items:end center;padding:12px}.modal{width:min(100%,520px);max-height:88vh;overflow:auto;background:#101612;border:1px solid var(--border);border-radius:23px;padding:20px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.modal-head h2{font-size:20px;margin:0}.close{background:var(--panel2);color:var(--text);border-radius:10px;padding:8px 11px}.choice{display:flex;gap:10px;margin:12px 0}.choice button{flex:1;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}.choice .big{font-size:29px}.choice small{color:var(--muted)}.plan{background:var(--panel);border:1px solid var(--border);padding:16px;border-radius:15px;margin:10px 0}.plan h3{margin:0 0 6px}.plan p{color:var(--muted);font-size:13px;line-height:1.5}.plan.vip{border-color:#2d8950;background:linear-gradient(135deg,#173521,#111714)}.tag{font-size:10px;color:var(--green);font-weight:900}.footer-note{text-align:center;color:#6f7d73;font-size:11px;padding:25px 10px}.pill{display:inline-block;border:1px solid var(--border);border-radius:99px;padding:5px 8px;font-size:11px;color:var(--muted)}.video-placeholder{aspect-ratio:16/9;background:linear-gradient(135deg,#183322,#0b100d);border-radius:16px;display:grid;place-items:center;font-size:54px;border:1px solid var(--border)}.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#e8fff0;color:#092012;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:700;z-index:80;box-shadow:0 8px 30px #0008;max-width:90%;text-align:center}.muted{color:var(--muted)}.divider{height:1px;background:var(--border);margin:17px 0}
+@media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.country-list{grid-template-columns:repeat(3,minmax(0,1fr))}.feature-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.modal-backdrop{place-items:center}.page{padding:25px 22px}.topbar{padding-left:max(20px,calc((100vw - 1000px)/2));padding-right:max(20px,calc((100vw - 1000px)/2))}}
+</style>
 </head>
 <body>
+<div class="app">
+<header class="topbar">
+  <div class="brand"><div class="logo">O</div>OUB<span>ARY</span></div>
+  <div class="top-actions"><button class="icon-btn" onclick="openModal('profileModal')" aria-label="Profil">👤</button><button class="icon-btn" onclick="showPage('downloads')" aria-label="Téléchargements">📥</button></div>
+</header>
 
-    <header>
-        <h1>OUBARY</h1>
-        <div class="lang-bar">
-            <button class="lang-btn" onclick="changeLang('fr')">FR</button>
-            <button class="lang-btn" onclick="changeLang('en')">EN</button>
-            <button class="lang-btn" onclick="changeLang('ar')">AR</button>
-        </div>
-    </header>
+<main>
+<section class="page active" id="home">
+  <div class="hero">
+    <div class="eyebrow">Le monde en vidéos</div>
+    <h1>Découvre le monde.<br><span style="color:var(--green)">À ta façon.</span></h1>
+    <p>Films, animés, histoires et cultures du monde réunis dans une seule expérience.</p>
+    <button class="btn primary" onclick="showPage('cinema')">Explorer le cinéma <span>→</span></button>
+  </div>
+  <div class="search"><input id="homeSearch" placeholder="🔎 Rechercher un film, une langue..." oninput="searchEverywhere(this.value)"><button class="btn secondary" onclick="showPage('assistant')">IA</button></div>
+  <div class="section-head"><h2>Explore OUBARY</h2></div>
+  <div class="feature-grid">
+    <button class="feature" onclick="showPage('cinema')"><div class="emoji">🎬</div><h3>Films & séries</h3><p>Découvre les films, séries et animés.</p></button>
+    <button class="feature" onclick="showPage('cultures')"><div class="emoji">🌍</div><h3>Cultures du monde</h3><p>Explore les pays, les langues et les traditions.</p></button>
+    <button class="feature" onclick="showPage('creators')"><div class="emoji">🎥</div><h3>Créateurs</h3><p>Découvre les créateurs et leurs vidéos.</p></button>
+    <button class="feature" onclick="showPage('assistant')"><div class="emoji">🤖</div><h3>Assistant IA</h3><p>Décris une histoire pour trouver un contenu.</p></button>
+  </div>
+  <div class="section-head"><h2>À découvrir</h2><button class="text-btn" onclick="showPage('cinema')">Tout voir →</button></div>
+  <div class="grid" id="homeCards"></div>
+  <div class="footer-note">OUBARY · Prototype en développement</div>
+</section>
 
-    <div class="container">
+<section class="page" id="cinema">
+  <div class="eyebrow">OUBARY divertissement</div><h1 style="margin:7px 0 4px">Cinéma 🎬</h1><p class="muted">Films, séries, animés et documentaires.</p>
+  <div class="chips" id="cinemaChips">
+    <button class="chip selected" onclick="setCinemaFilter('Tous',this)">Tout</button><button class="chip" onclick="setCinemaFilter('Film',this)">Films</button><button class="chip" onclick="setCinemaFilter('Série',this)">Séries</button><button class="chip" onclick="setCinemaFilter('Animé',this)">Animés</button><button class="chip" onclick="setCinemaFilter('Documentaire',this)">Documentaires</button>
+  </div>
+  <div class="search"><input id="cinemaSearch" placeholder="Rechercher dans le catalogue..." oninput="renderCinema()"></div>
+  <div class="grid" id="cinemaCards"></div>
+  <div class="notice" style="margin-top:18px">Les titres affichés sont des exemples de démonstration. Les vidéos réelles devront être ajoutées avec les autorisations de diffusion nécessaires.</div>
+</section>
 
-        <!-- ================= VUE 1 : ACCUEIL ================= -->
-        <div id="view-home" class="view-section active">
-            
-            <!-- Barre de recherche -->
-            <input type="text" class="search-box" id="searchInput" placeholder="Rechercher une série, un animé, un film..." onkeyup="filterSearch()">
-
-            <!-- Filtres par genre (Animés, TV, Séries, Films) -->
-            <div class="filter-bar">
-                <button class="filter-btn active" onclick="setFilter('all', this)">Tous</button>
-                <button class="filter-btn" onclick="setFilter('anime', this)">⛩️ Animés</button>
-                <button class="filter-btn" onclick="setFilter('tv', this)">📺 TV</button>
-                <button class="filter-btn" onclick="setFilter('series', this)">🎬 Séries</button>
-                <button class="filter-btn" onclick="setFilter('movies', this)">🎥 Films</button>
-            </div>
-
-            <!-- Bannière Nouveauté (Saison 1 / 2) -->
-            <div class="hero-banner">
-                <div class="badge" style="width: fit-content; margin-bottom: 4px;" id="txtHeroBadge">SAISON 1 & 2 DISPONIBLE</div>
-                <div class="hero-title" id="txtHeroTitle">Solo Leveling / Nouveautés</div>
-                <div class="hero-sub" id="txtHeroSub">Découvre les épisodes frais sans consommer tes passes.</div>
-                <button class="btn btn-android" onclick="downloadAndroid('Nouveauté Vedette')" style="padding: 6px; font-size: 11px;" id="txtHeroBtn">🔥 Regarder / Télécharger</button>
-            </div>
-
-            <!-- Note d'économie de passes -->
-            <div class="data-note" id="txtDataNote">
-                💡 <b>Astuce Passes :</b> Vidéos ultra-compressées. Télécharge une fois et regarde sans internet !
-            </div>
-
-            <!-- Catalogue Top 10 & Tendances -->
-            <div class="card">
-                <div class="card-title">
-                    <span id="txtCatalogTitle">Top 10 & Tendances</span>
-                </div>
-                <div class="media-grid" id="catalogContent">
-                    <!-- Dynamique -->
-                </div>
-            </div>
-
-            <!-- Pass VIP YouTube -->
-            <div class="card">
-                <div class="card-title">
-                    <span id="txtVipTitle">Pass VIP Zéro Pub</span>
-                    <div>
-                        <span class="badge" id="badgeReq">Requis</span>
-                        <span class="badge-vip" id="badgeVip">VIP ACTIF</span>
-                    </div>
-                </div>
-                <p style="font-size: 12px; color: #aaa;" id="txtVipDesc">Pour éviter les pubs, abonne-toi à notre chaîne !</p>
-                <button class="btn btn-yt" id="ytBtn" onclick="openYouTubeChannel()">1. S'abonner (@woly-0z)</button>
-                <button class="btn btn-verify" id="verifyBtn" onclick="verifySubscription()">2. J'm'y suis abonné ! Vérifier</button>
-                <div id="statusMessage"></div>
-            </div>
-
-        </div>
-
-        <!-- ================= VUE 2 : CHAÎNES TV LOCALES & AFRICAINES ================= -->
-        <div id="view-tv" class="view-section">
-            <div class="card">
-                <div class="card-title"><span>📺 Chaînes TV & Directs Africains</span></div>
-                <p style="font-size: 12px; color: #aaa;" id="txtTvDesc">Retrouve tes chaînes guinéennes et africaines préférées en direct.</p>
-                <div class="media-grid">
-                    <div class="media-card" onclick="alert('Lancement du flux TV Guinée...')">
-                        <img src="https://images.unsplash.com/photo-1593784991095-a205069470b6?w=200" alt="TV">
-                        <div class="media-title">Guinée TV Direct</div>
-                    </div>
-                    <div class="media-card" onclick="alert('Lancement du flux Canal Oubary...')">
-                        <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=200" alt="TV">
-                        <div class="media-title">Canal Pan-Africain</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= VUE 3 : TÉLÉCHARGEMENT & TRANSFERT (XENDER) ================= -->
-        <div id="view-downloads" class="view-section">
-            <div class="card">
-                <div class="card-title">
-                    <span>📥 Téléchargements & Transfert</span>
-                    <span class="badge-vip" id="badgeVipHeader">VIP</span>
-                </div>
-                <p style="font-size: 12px; color: #aaa;" id="txtDownloadDesc">Retrouve tes fichiers téléchargés et partage-les sans internet (Android ou Mode iPhone / Xender).</p>
-                
-                <div class="media-item" style="background:#14151f; padding:10px; border-radius:8px; margin-bottom:10px; font-size:12px;">
-                    <b>Demon Slayer - Épisode 01</b> (HD Compressé - 320 Mo)
-                    <div style="display: flex; gap: 6px; margin-top: 8px;">
-                        <button class="btn btn-android" style="margin:0; padding:6px;" onclick="alert('Lecture locale sans internet lancée !')">▶️ Lire</button>
-                        <button class="btn btn-ios" style="margin:0; padding:6px;" onclick="transferIPhone('Demon Slayer Ep 1')">🍎 Mode iPhone</button>
-                    </div>
-                </div>
-
-                <button class="btn btn-danger" onclick="alert('Espace téléphone nettoyé !')" id="btnClear">🗑️ Nettoyer l'espace de stockage</button>
-            </div>
-        </div>
-
-        <!-- ================= VUE 4 : ASSISTANT IA ================= -->
-        <div id="view-ai" class="view-section">
-            <div class="card" style="border: 1px solid var(--ai-color);">
-                <div class="card-title"><span>🤖 Oubary AI Assistant</span></div>
-                <p style="font-size: 12px; color: #aaa;" id="txtAiDesc">Tu as oublié le nom d'un animé ou d'une série ? Envoie une description ou une photo, l'IA retrouve le titre et lance la recherche instantanément !</p>
-                
-                <input type="text" class="search-box" id="aiQuery" placeholder="Ex: Un ninja blond avec un démon renard...">
-                <button class="btn btn-ai" onclick="runAiAssistant()" id="txtAiBtn">🔍 Retrouver & Lancer la recherche</button>
-                <div id="aiResult" style="font-size: 12px; color: #64ffda; margin-top: 10px; background: rgba(100,255,218,0.1); padding: 10px; border-radius: 6px; display: none;"></div>
-            </div>
-        </div>
-
+<section class="page" id="cultures">
+  <div id="cultureStart">
+    <div class="eyebrow">OUBARY cultures</div><h1 style="margin:7px 0">Cultures du monde 🌍</h1><p class="muted">Découvre les langues, les traditions et les histoires des peuples.</p>
+    <div class="feature-grid" style="margin-top:20px">
+      <button class="feature" onclick="selectContinent('Afrique')"><div class="emoji">🌍</div><h3>Afrique</h3><p>Langues, peuples, traditions et créateurs.</p></button>
+      <button class="feature" onclick="selectContinent('Asie')"><div class="emoji">🌏</div><h3>Asie</h3><p>Langues, cultures, histoires et vidéos.</p></button>
     </div>
+    <div class="section-head"><h2>Créateurs culturels</h2></div>
+    <p class="muted">Découvre les témoignages, les contes et les savoirs partagés par les communautés.</p>
+  </div>
+  <div id="countryView" class="hidden"><button class="text-btn" onclick="cultureBack('start')">← Retour aux continents</button><div class="eyebrow" id="continentLabel"></div><h1>Choisis un pays</h1><p class="muted">Sélectionne un pays pour découvrir les langues et les contenus disponibles.</p><div class="country-list" id="countryList"></div></div>
+  <div id="languageView" class="hidden"><button class="text-btn" onclick="cultureBack('countries')">← Retour aux pays</button><div class="eyebrow" id="countryLabel"></div><h1>Choisis une langue</h1><p class="muted">Les vidéos seront classées selon leur langue réelle et les informations fournies par leurs créateurs.</p><div class="list" id="languageList"></div></div>
+  <div id="cultureVideos" class="hidden"><button class="text-btn" onclick="cultureBack('languages')">← Retour aux langues</button><div class="eyebrow" id="culturePath"></div><h1 id="cultureTitle">Vidéos culturelles</h1><p class="muted">Histoires, musique, traditions et apprentissage.</p><div class="chips" id="cultureChips"><button class="chip selected" onclick="setCultureCategory('Tout',this)">Tout</button><button class="chip" onclick="setCultureCategory('Histoires',this)">Histoires</button><button class="chip" onclick="setCultureCategory('Musique',this)">Musique</button><button class="chip" onclick="setCultureCategory('Langue',this)">Apprendre la langue</button><button class="chip" onclick="setCultureCategory('Traditions',this)">Traditions</button></div><div class="list" id="cultureVideoList"></div><div class="notice" style="margin-top:15px">Les vidéos présentées ici sont des exemples. Le catalogue réel sera alimenté par des contenus autorisés et vérifiés.</div></div>
+</section>
 
-    <!-- Barre de Navigation Fixe en Bas -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="switchView('home', this)">
-            <span class="icon">🏠</span>
-            <span id="navHome">Accueil</span>
-        </button>
-        <button class="nav-item" onclick="switchView('tv', this)">
-            <span class="icon">📺</span>
-            <span id="navTv">TV</span>
-        </button>
-        <button class="nav-item" onclick="switchView('downloads', this)">
-            <span class="icon">📥</span>
-            <span id="navDownloads">Transférer</span>
-        </button>
-        <button class="nav-item" onclick="switchView('ai', this)">
-            <span class="icon">🤖</span>
-            <span id="navAi">IA</span>
-        </button>
-    </nav>
+<section class="page" id="creators">
+  <div class="hero"><div class="eyebrow">OUBARY créateurs</div><h1>Ta culture.<br>Ta voix. Tes vidéos.</h1><p>Un espace pour les conteurs, les vidéastes, les éducateurs et les créateurs du monde entier.</p><button class="btn primary" onclick="openModal('creatorModal')">＋ Présenter mon projet</button></div>
+  <div class="section-head"><h2>Ce que les créateurs pourront faire</h2></div>
+  <div class="list">
+    <div class="row"><div class="row-icon">🎞️</div><div class="grow"><h3>Publier des vidéos</h3><p>Ajouter un titre, une description, un pays et une langue.</p></div></div>
+    <div class="row"><div class="row-icon">📊</div><div class="grow"><h3>Suivre les statistiques</h3><p>Consulter les vues et l'engagement sur les vidéos.</p></div></div>
+    <div class="row"><div class="row-icon">💰</div><div class="grow"><h3>Programme de rémunération</h3><p>Accès futur selon des critères clairs et des revenus disponibles.</p></div></div>
+  </div>
+  <div class="notice warning" style="margin-top:16px">La publication réelle nécessite un compte sécurisé, un serveur d'envoi de fichiers, une modération et un contrôle des droits d'auteur. Ce prototype ne téléverse pas de vidéos.</div>
+</section>
 
-    <script>
-        let isVip = localStorage.getItem('oubary_vip') === 'true';
+<section class="page" id="assistant">
+  <div class="eyebrow">OUBARY intelligence</div><h1 style="margin:7px 0">Assistant IA 🤖</h1><p class="muted">Décris le film, la scène, la langue ou la tradition que tu recherches.</p>
+  <div class="notice">Pour le moment, l'assistant utilise le catalogue de démonstration. Une véritable IA sera connectée plus tard.</div>
+  <div id="chatBox" class="list" style="margin:18px 0"><div class="row"><div class="row-icon">🤖</div><div class="grow"><h3>Bonjour !</h3><p>Décris ce que tu cherches, par exemple : « un animé d'aventure » ou « des histoires traditionnelles en Pular ».</p></div></div></div>
+  <form class="form" onsubmit="askAssistant(event)"><label class="label" for="assistantInput">Que veux-tu découvrir ?</label><textarea id="assistantInput" rows="3" placeholder="Je cherche un film, une langue, une histoire..." required></textarea><button class="btn primary full">Rechercher</button></form>
+</section>
 
-        // Données du catalogue
-        const mediaData = [
-            {type: 'anime', title: 'Demon Slayer S4', img: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=200', top: '#1'},
-            {type: 'anime', title: 'Jujutsu Kaisen', img: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=200', top: '#2'},
-            {type: 'series', title: 'House of Dragon', img: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=200', top: '#1'},
-            {type: 'movies', title: 'Avatar 2 HD', img: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=200', top: '#1'},
-            {type: 'tv', title: 'JT Guinée Direct', img: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?w=200', top: 'LIVE'}
-        ];
+<section class="page" id="downloads">
+  <div class="eyebrow">Ta bibliothèque</div><h1 style="margin:7px 0">Téléchargements 📥</h1><p class="muted">Retrouve ici les éléments que tu as enregistrés dans ce prototype.</p>
+  <div id="downloadList" class="list"></div>
+  <div class="notice warning" style="margin-top:16px">Enregistrer un titre dans cette liste ne télécharge pas encore une vraie vidéo. Les téléchargements hors connexion seront ajoutés avec un système compatible et des contenus autorisés.</div>
+</section>
 
-        const translations = {
-            fr: {
-                navHome: "Accueil", navTv: "TV", navDownloads: "Transférer", navAi: "IA",
-                heroBadge: "SAISON 1 & 2 DISPONIBLE", heroTitle: "Solo Leveling / Nouveautés", heroSub: "Épisodes frais sans consommer tes passes.", heroBtn: "🔥 Regarder / Télécharger",
-                dataNote: "💡 <b>Astuce Passes :</b> Vidéos ultra-compressées. Télécharge une fois et regarde sans internet !",
-                catalogTitle: "Top 10 & Tendances",
-                vipTitle: "Pass VIP Zéro Pub", vipDesc: "Pour éviter les pubs, abonne-toi à notre chaîne !",
-                subBtn: "1. S'abonner (@woly-0z)", verifyBtn: "2. J'm'y suis abonné ! Vérifier",
-                tvDesc: "Retrouve tes chaînes guinéennes et africaines préférées en direct.",
-                downloadDesc: "Retrouve tes fichiers téléchargés et partage-les sans internet (Android ou Mode iPhone / Xender).",
-                clear: "🗑️ Nettoyer l'espace de stockage",
-                aiDesc: "Tu as oublié le nom d'un animé ? Envoie une description, l'IA retrouve le titre et lance la recherche !",
-                aiBtn: "🔍 Retrouver & Lancer la recherche"
-            },
-            en: {
-                navHome: "Home", navTv: "TV", navDownloads: "Transfer", navAi: "AI",
-                heroBadge: "SEASON 1 & 2 OUT", heroTitle: "Solo Leveling / New Releases", heroSub: "Fresh episodes saving your data balance.", heroBtn: "🔥 Watch / Download",
-                dataNote: "💡 <b>Data Saver:</b> Compressed videos. Download once and watch offline!",
-                catalogTitle: "Top 10 & Trends",
-                vipTitle: "VIP Pass No Ads", vipDesc: "To block ads, subscribe to our channel!",
-                subBtn: "1. Subscribe (@woly-0z)", verifyBtn: "2. I subscribed! Verify",
-                tvDesc: "Watch your favorite Guinean and African TV channels live.",
-                downloadDesc: "Manage downloaded files and share offline (Android or iPhone / Xender Mode).",
-                clear: "🗑️ Clean storage space",
-                aiDesc: "Forgot an anime name? Describe it, AI finds the title and searches instantly!",
-                aiBtn: "🔍 Find & Search"
-            },
-            ar: {
-                navHome: "الرئيسية", navTv: "التلفزيون", navDownloads: "النقل", navAi: "الذكاء الاصطناعي",
-                heroBadge: "الموسم الأول والثاني متوفر", heroTitle: "سولو ليفلينج / إصدارات جديدة", heroSub: "حلقات جديدة توفر رصيد الإنترنت لديك.", heroBtn: "🔥 مشاهدة / تنزيل",
-                dataNote: "💡 <b>موفّر البيانات:</b> فيديوهات مضغوطة. قم بالتنزيل مرة واحدة وشاهد بدون إنترنت!",
-                catalogTitle: "أفضل 10 والاتجاهات",
-                vipTitle: "اشتراك VIP بدون إعلانات", vipDesc: "لمنع الإعلانات، اشترك في قناتنا!",
-                subBtn: "1. الاشتراك (@woly-0z)", verifyBtn: "2. لقد اشتركت! تحقق",
-                tvDesc: "تابع قنواتك الغينية والأفريقية المفضلة بث مباشر.",
-                downloadDesc: "إدارة الملفات المنزلة والمشاركة بدون إنترنت (أندرويد أو وضع آيفون / Xender).",
-                clear: "🗑️ تنظيف مساحة التخزين",
-                aiDesc: "هل نسيت اسم الأنمي؟ اصفه وسيجد الذكاء الاصطناعي العنوان ويبحث فوراً!",
-                aiBtn: "🔍 إيجاد وبحث"
-            }
-        };
+<section class="page" id="profile">
+  <div class="eyebrow">Ton espace personnel</div><h1 style="margin:7px 0">Mon espace 👤</h1>
+  <div class="row" style="margin:18px 0"><div class="row-icon">🙂</div><div class="grow"><h3 id="profileName">Invité OUBARY</h3><p id="profileMeta">Mode invité · Prototype</p></div><button onclick="openModal('profileModal')">Modifier</button></div>
+  <div class="list">
+    <button class="row" onclick="openModal('plansModal')" style="text-align:left;width:100%"><div class="row-icon">💎</div><div class="grow"><h3>Mon offre</h3><p id="planSummary">Mode gratuit de démonstration</p></div><span>→</span></button>
+    <button class="row" onclick="showPage('downloads')" style="text-align:left;width:100%"><div class="row-icon">📥</div><div class="grow"><h3>Ma bibliothèque</h3><p>Éléments enregistrés</p></div><span>→</span></button>
+    <button class="row" onclick="openModal('transferModal')" style="text-align:left;width:100%"><div class="row-icon">📲</div><div class="grow"><h3>Transfert local</h3><p>Préparer un futur transfert entre téléphones</p></div><span>→</span></button>
+    <button class="row" onclick="openModal('settingsModal')" style="text-align:left;width:100%"><div class="row-icon">⚙️</div><div class="grow"><h3>Paramètres</h3><p>Préférences et informations</p></div><span>→</span></button>
+  </div>
+  <div class="footer-note">OUBARY · Prototype de démonstration<br>Les comptes, paiements et services en ligne ne sont pas encore connectés.</div>
+</section>
+</main>
 
-        window.onload = function() {
-            if (isVip) { activerModeVipVisuel(); }
-            renderCatalog(mediaData);
-        };
+<nav class="bottom-nav" aria-label="Navigation principale">
+  <button class="nav-btn active" data-page="home" onclick="showPage('home')"><span class="nav-icon">🏠</span>Accueil</button>
+  <button class="nav-btn" data-page="cinema" onclick="showPage('cinema')"><span class="nav-icon">🎬</span>Cinéma</button>
+  <button class="nav-btn" data-page="cultures" onclick="showPage('cultures')"><span class="nav-icon">🌍</span>Cultures</button>
+  <button class="nav-btn" data-page="assistant" onclick="showPage('assistant')"><span class="nav-icon">🤖</span>Assistant</button>
+  <button class="nav-btn" data-page="profile" onclick="showPage('profile')"><span class="nav-icon">👤</span>Espace</button>
+</nav>
+</div>
 
-        function switchView(viewId, btn) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById('view-' + viewId).classList.add('active');
-            btn.classList.add('active');
-        }
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
 
-        function renderCatalog(data) {
-            const grid = document.getElementById('catalogContent');
-            grid.innerHTML = '';
-            data.forEach(item => {
-                grid.innerHTML += `
-                    <div class="media-card">
-                        <span class="top-badge">${item.top}</span>
-                        <img src="${item.img}" alt="Media">
-                        <div class="media-title">${item.title}</div>
-                        <button class="btn btn-android" onclick="downloadAndroid('${item.title}')">📥 Android</button>
-                        <button class="btn btn-ios" onclick="transferIPhone('${item.title}')">🍎 iPhone</button>
-                    </div>
-                `;
-            });
-        }
-
-        function setFilter(type, btn) {
-            document.querySelectorAll('.filter-btn').forEach(el => el.classList.remove('active'));
-            btn.classList.add('active');
-
-            if(type === 'all') {
-                renderCatalog(mediaData);
-            } else {
-                const filtered = mediaData.filter(m => m.type === type);
-                renderCatalog(filtered);
-            }
-        }
-
-        function filterSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = mediaData.filter(m => m.title.toLowerCase().includes(query));
-            renderCatalog(filtered);
-        }
-
-        function changeLang(lang) {
-            const t = translations[lang];
-            document.getElementById('navHome').innerText = t.navHome;
-            document.getElementById('navTv').innerText = t.navTv;
-            document.getElementById('navDownloads').innerText = t.navDownloads;
-            document.getElementById('navAi').innerText = t.navAi;
-            document.getElementById('txtHeroBadge').innerText = t.heroBadge;
-            document.getElementById('txtHeroTitle').innerText = t.heroTitle;
-            document.getElementById('txtHeroSub').innerText = t.heroSub;
-            document.getElementById('txtHeroBtn').innerText = t.heroBtn;
-            document.getElementById('txtDataNote').innerHTML = t.dataNote;
-            document.getElementById('txtCatalogTitle').innerText = t.catalogTitle;
-            document.getElementById('txtVipTitle').innerText = t.vipTitle;
-            document.getElementById('txtVipDesc').innerText = t.vipDesc;
-            document.getElementById('ytBtn').innerText = t.subBtn;
-            document.getElementById('verifyBtn').innerText = t.verifyBtn;
-            document.getElementById('txtTvDesc').innerText = t.tvDesc;
-            document.getElementById('txtDownloadDesc').innerText = t.downloadDesc;
 <script>
-  // 1. Liste des médias (Catalogue)
-  const mediaData = [
-    { title: "Solo Leveling", type: "anime", img: "https://via.placeholder.com/150", link: "https://youtube.com" },
-    { title: "Naruto Shippuden", type: "anime", img: "https://via.placeholder.com/150", link: "https://youtube.com" },
-    { title: "One Piece", type: "anime", img: "https://via.placeholder.com/150", link: "https://youtube.com" }
-  ];
+const titles = [
+ {id:1,title:"Voyage vers l'inconnu",type:"Film",genre:"Aventure",year:2025,icon:"🚀",desc:"Un voyage plein de mystères.",country:"International"},
+ {id:2,title:"Les Gardiens du royaume",type:"Animé",genre:"Action",year:2026,icon:"⚔️",desc:"Une aventure animée fantastique.",country:"Japon"},
+ {id:3,title:"Histoires de demain",type:"Série",genre:"Drame",year:2024,icon:"🌌",desc:"Des histoires humaines et inattendues.",country:"International"},
+ {id:4,title:"Mémoire des peuples",type:"Documentaire",genre:"Culture",year:2025,icon:"🌍",desc:"À la découverte des traditions.",country:"Afrique"},
+ {id:5,title:"Le dernier défi",type:"Film",genre:"Action",year:2023,icon:"🏆",desc:"Une équipe face à un grand défi.",country:"International"},
+ {id:6,title:"Au-delà des étoiles",type:"Animé",genre:"Fantastique",year:2026,icon:"✨",desc:"Un monde magique à explorer.",country:"Japon"}
+];
+const countries = {
+ Afrique:[
+  {name:"Guinée",flag:"🇬🇳",languages:["Peul / Pular","Soussou","Maninka","Kissi","Kpèlè","Toma","Français"]},
+  {name:"Sénégal",flag:"🇸🇳",languages:["Wolof","Pulaar","Serer","Jola","Français"]},
+  {name:"Mali",flag:"🇲🇱",languages:["Bambara","Fulfulde","Soninké","Songhaï","Français"]},
+  {name:"Côte d’Ivoire",flag:"🇨🇮",languages:["Baoulé","Dioula","Sénoufo","Bété","Français"]},
+  {name:"Nigeria",flag:"🇳🇬",languages:["Yoruba","Igbo","Hausa","Anglais"]},
+  {name:"Ghana",flag:"🇬🇭",languages:["Akan / Twi","Ewe","Ga","Anglais"]},
+  {name:"Cameroun",flag:"🇨🇲",languages:["Fulfulde","Duala","Ewondo","Français","Anglais"]},
+  {name:"Maroc",flag:"🇲🇦",languages:["Arabe","Amazighe","Darija","Français"]},
+  {name:"Afrique du Sud",flag:"🇿🇦",languages:["Zulu","Xhosa","Afrikaans","Anglais"]},
+  {name:"Bénin",flag:"🇧🇯",languages:["Fon","Yoruba","Bariba","Français"]},
+  {name:"Burkina Faso",flag:"🇧🇫",languages:["Mooré","Dioula","Fulfulde","Français"]},
+  {name:"République démocratique du Congo",flag:"🇨🇩",languages:["Lingala","Swahili","Kikongo","Tshiluba","Français"]}
+ ],
+ Asie:[
+  {name:"Japon",flag:"🇯🇵",languages:["Japonais"]},
+  {name:"Chine",flag:"🇨🇳",languages:["Mandarin","Cantonais","Autres langues régionales"]},
+  {name:"Inde",flag:"🇮🇳",languages:["Hindi","Bengali","Tamoul","Télougou","Anglais"]},
+  {name:"Corée du Sud",flag:"🇰🇷",languages:["Coréen"]},
+  {name:"Indonésie",flag:"🇮🇩",languages:["Indonésien","Javanais","Sundanais"]},
+  {name:"Thaïlande",flag:"🇹🇭",languages:["Thaï"]},
+  {name:"Vietnam",flag:"🇻🇳",languages:["Vietnamien"]},
+  {name:"Philippines",flag:"🇵🇭",languages:["Filipino","Cebuano","Anglais"]},
+  {name:"Pakistan",flag:"🇵🇰",languages:["Ourdou","Pendjabi","Pachto"]},
+  {name:"Bangladesh",flag:"🇧🇩",languages:["Bengali"]}
+ ]
+};
+let currentFilter="Tous",currentContinent="",currentCountry=null,currentLanguage="",cultureCategory="Tout";
+let saved=JSON.parse(localStorage.getItem("oubarySaved")||"[]");
+let profile=JSON.parse(localStorage.getItem("oubaryProfile")||'{"name":"Invité OUBARY","age":"Non défini","plan":"Gratuit","region":"Non définie","language":"Non définie"}');
 
-  // 2. Navigation entre les Onglets (Accueil, TV, Transférer, IA)
-  function switchTab(tabId) {
-    const views = document.querySelectorAll('.view-section');
-    views.forEach(v => v.style.display = 'none');
-    
-    const target = document.getElementById('view-' + tabId);
-    if(target) target.style.display = 'block';
-
-    const buttons = document.querySelectorAll('.nav-btn');
-    buttons.forEach(b => b.classList.remove('active'));
-  }
-
-  // 3. Filtrage par Catégories (Animés, TV, Séries, Films)
-  function setFilter(type, btn) {
-    const buttons = document.querySelectorAll('.filter-btn');
-    buttons.forEach(b => b.classList.remove('active'));
-    if(btn) btn.classList.add('active');
-
-    if(type === 'all') {
-      renderCatalog(mediaData);
-    } else {
-      const filtered = mediaData.filter(m => m.type === type);
-      renderCatalog(filtered);
-    }
-  }
-
-  // 4. Recherche Dynamique
-  function filterSearch() {
-    const input = document.getElementById('searchInput');
-    if(!input) return;
-    const query = input.value.toLowerCase();
-    const filtered = mediaData.filter(m => m.title.toLowerCase().includes(query));
-    renderCatalog(filtered);
-  }
-
-  // 5. Affichage du Catalogue
-  function renderCatalog(data) {
-    const grid = document.getElementById('mediaGrid');
-    if(!grid) return;
-    grid.innerHTML = '';
-    data.forEach(item => {
-      grid.innerHTML += `
-        <div class="media-card" onclick="window.open('${item.link}', '_blank')">
-          <img src="${item.img}" alt="${item.title}">
-          <div class="media-title">${item.title}</div>
-        </div>
-      `;
-    });
-  }
-
-  // Initialisation au chargement
-  document.addEventListener('DOMContentLoaded', () => {
-    renderCatalog(mediaData);
-  });
+function safe(text){return String(text).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function showPage(id){
+ document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));
+ document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===id || (id==="downloads"&&b.dataset.page==="profile")));
+ if(id==="cinema")renderCinema(); if(id==="downloads")renderDownloads(); if(id==="profile")renderProfile();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function toast(message){const root=document.getElementById("toastRoot");root.innerHTML='<div class="toast" role="status">'+safe(message)+'</div>';setTimeout(()=>root.innerHTML="",2800);}
+function cardHTML(item){const isSaved=saved.includes(item.id);return `<article class="card"><div class="poster"><span>${item.icon}</span><span class="badge">${safe(item.type)}</span></div><div class="card-body"><h3>${safe(item.title)}</h3><p>${safe(item.year+" · "+item.genre)}</p><div class="card-actions"><button class="small-btn green" onclick="playDemo(${item.id})">▶ Découvrir</button><button class="small-btn" onclick="toggleSave(${item.id})">${isSaved?"✓ Gardé":"＋ Garder"}</button></div></div></article>`;}
+function renderHome(){document.getElementById("homeCards").innerHTML=titles.slice(0,4).map(cardHTML).join("");}
+function renderCinema(){const q=(document.getElementById("cinemaSearch")?.value||"").toLowerCase().trim();const data=titles.filter(t=>(currentFilter==="Tous"||t.type===currentFilter)&&(!q||(t.title+" "+t.genre+" "+t.type+" "+t.country).toLowerCase().includes(q)));document.getElementById("cinemaCards").innerHTML=data.length?data.map(cardHTML).join(""):'<div class="empty" style="grid-column:1/-1">Aucun résultat dans les exemples. Essaie un autre mot.</div>';}
+function setCinemaFilter(f,el){currentFilter=f;document.querySelectorAll("#cinemaChips .chip").forEach(b=>b.classList.remove("selected"));el.classList.add("selected");renderCinema();}
+function searchEverywhere(q){if(!q.trim())return;currentFilter="Tous";showPage("cinema");document.getElementById("cinemaSearch").value=q;renderCinema();}
+function toggleSave(id){saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];localStorage.setItem("oubarySaved",JSON.stringify(saved));renderHome();renderCinema();renderDownloads();toast(saved.includes(id)?"Ajouté à ta bibliothèque.":"Retiré de ta bibliothèque.");}
+function playDemo(id){const item=titles.find(t=>t.id===id);if(!item)return;openModal("videoModal",`<div class="modal-head"><h2>${safe(item.title)}</h2><button class="close" onclick="closeModal()">✕</button></div><div class="video-placeholder">▶️</div><p class="muted">${safe(item.type)} · ${item.year} · ${safe(item.genre)}</p><p>Cette fiche est un exemple de démonstration. Aucun fichier vidéo réel n'est associé à ce titre.</p><button class="btn primary full" onclick="toggleSave(${item.id});closeModal()">＋ Enregistrer dans ma bibliothèque</button>`);}
+function renderDownloads(){const items=titles.filter(t=>saved.includes(t.id));document.getElementById("downloadList").innerHTML=items.length?items.map(t=>`<div class="row"><div class="row-icon">${t.icon}</div><div class="grow"><h3>${safe(t.title)}</h3><p>${safe(t.type)} · Enregistré dans le prototype, pas téléchargé</p></div><button onclick="playDemo(${t.id})">Voir</button></div>`).join(""):'<div class="empty"><div class="big">📥</div><h3>Ta bibliothèque est vide</h3><p>Enregistre un titre depuis la section Cinéma pour le retrouver ici.</p><button class="btn secondary" onclick="showPage(\'cinema\')">Explorer le cinéma</button></div>';}
+function selectContinent(continent){currentContinent=continent;document.getElementById("cultureStart").classList.add("hidden");document.getElementById("countryView").classList.remove("hidden");document.getElementById("languageView").classList.add("hidden");document.getElementById("cultureVideos").classList.add("hidden");document.getElementById("continentLabel").textContent=continent;document.getElementById("countryList").innerHTML=countries[continent].map((c,i)=>`<button class="country" onclick="selectCountry(${i})"><span class="flag">${c.flag}</span><span><strong>${safe(c.name)}</strong><small>${c.languages.length} langues proposées</small></span></button>`).join("");}
+function selectCountry(index){currentCountry=countries[currentContinent][index];document.getElementById("countryView").classList.add("hidden");document.getElementById("languageView").classList.remove("hidden");document.getElementById("cultureVideos").classList.add("hidden");document.getElementById("countryLabel").textContent=currentCountry.flag+" "+currentCountry.name;document.getElementById("languageList").innerHTML=currentCountry.languages.map((lang,i)=>`<button class="row" style="text-align:left;width:100%" onclick="selectLanguage(${i})"><div class="row-icon">🗣️</div><div class="grow"><h3>${safe(lang)}</h3><p>Explorer les vidéos dans cette langue</p></div><span>→</span></button>`).join("");}
+function selectLanguage(index){currentLanguage=currentCountry.languages[index];cultureCategory="Tout";document.getElementById("languageView").classList.add("hidden");document.getElementById("cultureVideos").classList.remove("hidden");document.getElementById("culturePath").textContent=currentContinent+" / "+currentCountry.name+" / "+currentLanguage;document.getElementById("cultureTitle").textContent="Vidéos en "+currentLanguage;document.querySelectorAll("#cultureChips .chip").forEach((b,i)=>b.classList.toggle("selected",i===0));renderCultureVideos();}
+function setCultureCategory(cat,el){cultureCategory=cat;document.querySelectorAll("#cultureChips .chip").forEach(b=>b.classList.remove("selected"));el.classList.add("selected");renderCultureVideos();}
+function renderCultureVideos(){const demos=[{icon:"📖",title:"Contes et histoires traditionnelles",cat:"Histoires",desc:"Récits transmis de génération en génération."},{icon:"🥁",title:"Musique et chants traditionnels",cat:"Musique",desc:"Découvrir les sons et les rythmes du patrimoine."},{icon:"🗣️",title:"Premiers mots et expressions",cat:"Langue",desc:"Une introduction à la langue et à sa prononciation."},{icon:"🧵",title:"Traditions et savoir-faire",cat:"Traditions",desc:"Artisanat, vêtements et pratiques culturelles."}];const filtered=demos.filter(x=>cultureCategory==="Tout"||x.cat===cultureCategory);document.getElementById("cultureVideoList").innerHTML=filtered.map((x,i)=>`<div class="row"><div class="row-icon">${x.icon}</div><div class="grow"><h3>${safe(x.title)}</h3><p>${safe(x.desc)}</p><p style="margin-top:5px"><span class="pill">${safe(currentCountry.name)}</span> <span class="pill">${safe(currentLanguage)}</span></p></div><button onclick="toast('Exemple uniquement : les vidéos réelles seront ajoutées plus tard.')">Voir</button></div>`).join("");}
+function cultureBack(where){if(where==="start"){document.getElementById("cultureStart").classList.remove("hidden");document.getElementById("countryView").classList.add("hidden");document.getElementById("languageView").classList.add("hidden");document.getElementById("cultureVideos").classList.add("hidden");}else if(where==="countries"){selectContinent(currentContinent);}else if(where==="languages"){document.getElementById("cultureVideos").classList.add("hidden");document.getElementById("languageView").classList.remove("hidden");}}
+function askAssistant(e){e.preventDefault();const input=document.getElementById("assistantInput");const q=input.value.trim();if(!q)return;const box=document.getElementById("chatBox");box.insertAdjacentHTML("beforeend",`<div class="row"><div class="row-icon">🙂</div><div class="grow"><h3>Ta recherche</h3><p>${safe(q)}</p></div></div>`);const terms=q.toLowerCase().split(/[^a-zàâçéèêëîïôûùüÿñæœ0-9]+/).filter(Boolean);const found=titles.filter(t=>terms.some(w=>(t.title+" "+t.type+" "+t.genre+" "+t.desc+" "+t.country).toLowerCase().includes(w)));const reply=found.length?found.map(t=>`<div class="row"><div class="row-icon">${t.icon}</div><div class="grow"><h3>${safe(t.title)}</h3><p>${safe(t.type+" · "+t.genre)}</p></div><button onclick="playDemo(${t.id})">Voir</button></div>`).join(""):'<div class="row"><div class="row-icon">🤖</div><div class="grow"><h3>Je n’ai pas trouvé de correspondance exacte.</h3><p>Essaie « animé », « action », « aventure » ou explore la section Cultures. Cette recherche est une démonstration, pas encore une IA connectée.</p></div></div>';box.insertAdjacentHTML("beforeend",reply);input.value="";box.scrollIntoView({behavior:"smooth",block:"end"});}
+function openModal(type,customContent=""){let content="";if(type==="welcomeModal"){content=`<div class="modal-head"><h2>Bienvenue sur OUBARY</h2><button class="close" onclick="closeModal()">✕</button></div><p class="muted">Choisis un profil pour personnaliser les contenus. Cette sélection ne vérifie pas réellement l'âge.</p><div class="choice"><button class="feature" onclick="chooseAge('Enfant')"><span class="big">🧒</span><strong>Profil enfant</strong><small>Contenus adaptés</small></button><button class="feature" onclick="chooseAge('Adulte')"><span class="big">🧑</span><strong>Profil adulte</strong><small>Selon les règles d'accès</small></button></div><div class="notice">Les parents doivent gérer les profils enfants. Les contenus soumis à une restriction d'âge nécessitent des protections adaptées.</div><button class="btn secondary full" style="margin-top:12px" onclick="chooseAge('Non défini')">Continuer sans choisir</button>`;}
+else if(type==="plansModal"){content=`<div class="modal-head"><h2>Choisis ton accès</h2><button class="close" onclick="closeModal()">✕</button></div><div class="plan"><h3>⚪ OUBARY Gratuit</h3><p>Contenus gratuits autorisés, fonctions de base et publicités éventuelles.</p><button class="btn secondary full" onclick="setPlan('Gratuit')">Continuer gratuitement</button></div><div class="plan vip"><span class="tag">EXPÉRIENCE PREMIUM</span><h3>💎 OUBARY VIP</h3><p>Expérience sans publicité, fonctions premium et téléchargements autorisés. Prix et paiement seront configurés plus tard.</p><button class="btn primary full" onclick="vipDemo()">Découvrir VIP</button></div><button class="btn secondary full" onclick="closeModal()">Plus tard</button><p class="muted" style="font-size:11px">L'abonnement YouTube est distinct d'un abonnement OUBARY. Aucun paiement n'est effectué dans ce prototype.</p>`;}
+else if(type==="profileModal"){content=`<div class="modal-head"><h2>Ton profil</h2><button class="close" onclick="closeModal()">✕</button></div><form class="form" onsubmit="saveProfile(event)"><div><label class="label">Nom affiché</label><input id="pName" maxlength="40" value="${safe(profile.name)}" required></div><div><label class="label">Profil</label><select id="pAge"><option ${profile.age==="Non défini"?"selected":""}>Non défini</option><option ${profile.age==="Enfant"?"selected":""}>Enfant</option><option ${profile.age==="Adulte"?"selected":""}>Adulte</option></select></div><div><label class="label">Pays ou région préférée</label><input id="pRegion" maxlength="60" value="${safe(profile.region)}" placeholder="Ex. Guinée"></div><div><label class="label">Langue préférée</label><input id="pLanguage" maxlength="60" value="${safe(profile.language)}" placeholder="Ex. Français, Pular"></div><button class="btn primary full">Enregistrer sur cet appareil</button></form><p class="muted" style="font-size:11px">Prototype : les données restent sur cet appareil et ne créent pas un compte en ligne.</p>`;}
+else if(type==="creatorModal"){content=`<div class="modal-head"><h2>Intérêt créateur</h2><button class="close" onclick="closeModal()">✕</button></div><p class="muted">Présente ton idée de chaîne. Ce formulaire est une maquette locale et n'envoie rien à OUBARY.</p><form class="form" onsubmit="submitCreator(event)"><div><label class="label">Nom du créateur ou de la chaîne</label><input id="creatorName" maxlength="60" required placeholder="Nom de ta chaîne"></div><div><label class="label">Pays</label><input id="creatorCountry" maxlength="60" required placeholder="Ex. Guinée"></div><div><label class="label">Langue principale</label><input id="creatorLanguage" maxlength="60" required placeholder="Ex. Soussou"></div><div><label class="label">Type de vidéos</label><select id="creatorType"><option>Culture et traditions</option><option>Éducation et langues</option><option>Musique</option><option>Documentaires</option><option>Films et séries autorisés</option><option>Autre</option></select></div><button class="btn primary full">Enregistrer la maquette</button></form>`;}
+else if(type==="transferModal"){content=`<div class="modal-head"><h2>📲 Transfert local</h2><button class="close" onclick="closeModal()">✕</button></div><p>OUBARY prévoit un transfert de fichiers personnels entre appareils compatibles, via un réseau local ou une connexion prise en charge.</p><div class="notice warning">Le serveur local et le QR code ne sont pas encore implémentés. Aucun fichier ne sera envoyé depuis cet écran.</div><button class="btn secondary full" style="margin-top:14px" onclick="closeModal()">Compris</button>`;}
+else if(type==="settingsModal"){content=`<div class="modal-head"><h2>Paramètres & informations</h2><button class="close" onclick="closeModal()">✕</button></div><div class="list"><div class="row"><div class="grow"><h3>Version</h3><p>OUBARY prototype 0.1</p></div></div><div class="row"><div class="grow"><h3>Confidentialité</h3><p>Les préférences de ce prototype sont stockées localement sur l'appareil.</p></div></div><div class="row"><div class="grow"><h3>Droits des contenus</h3><p>Les vidéos réelles devront être publiées avec les autorisations nécessaires.</p></div></div></div><button class="btn secondary full" style="margin-top:14px" onclick="closeModal()">Fermer</button>`;}
+else{content=customContent;}
+document.getElementById("modalRoot").innerHTML=`<div class="modal-backdrop" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true">${content}</div></div>`;}
+function closeModal(){document.getElementById("modalRoot").innerHTML="";}
+function chooseAge(age){profile.age=age;localStorage.setItem("oubaryProfile",JSON.stringify(profile));closeModal();openModal("plansModal");}
+function setPlan(plan){profile.plan=plan;localStorage.setItem("oubaryProfile",JSON.stringify(profile));closeModal();renderProfile();toast("Mode "+plan+" sélectionné pour la démonstration.");}
+function vipDemo(){toast("La souscription VIP sera ajoutée après la mise en place d'un paiement sécurisé.");}
+function saveProfile(e){e.preventDefault();profile.name=document.getElementById("pName").value.trim();profile.age=document.getElementById("pAge").value;profile.region=document.getElementById("pRegion").value.trim()||"Non définie";profile.language=document.getElementById("pLanguage").value.trim()||"Non définie";localStorage.setItem("oubaryProfile",JSON.stringify(profile));closeModal();renderProfile();toast("Profil enregistré sur cet appareil.");}
+function renderProfile(){document.getElementById("profileName").textContent=profile.name;document.getElementById("profileMeta").textContent="Profil "+profile.age+" · "+profile.region;document.getElementById("planSummary").textContent="Offre "+profile.plan+" · Prototype";}
+function submitCreator(e){e.preventDefault();const name=document.getElementById("creatorName").value.trim();const country=document.getElementById("creatorCountry").value.trim();const lang=document.getElementById("creatorLanguage").value.trim();const type=document.getElementById("creatorType").value;closeModal();toast("Maquette enregistrée : "+name+" · "+country+" · "+lang+" · "+type+". Rien n'a été envoyé en ligne.");}
+renderHome();renderCinema();renderDownloads();renderProfile();
+setTimeout(()=>{if(!localStorage.getItem("oubaryWelcomed")){openModal("welcomeModal");localStorage.setItem("oubaryWelcomed","1");}},500);
 </script>
+</body>
+      </html>
